@@ -68,7 +68,7 @@ test_db_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
-class TestFileStorage(unittest.TestCase):
+class TestDbStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_returns_dict(self):
@@ -78,11 +78,77 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
+        all_object = session.query(State).all()
+
+        self.assertTrue(len(all_object) > 0)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
         """test that new adds an object to the database"""
+        state_data = {'name': 'lagos'}
+        new_state = State(**state_data)
+
+        model.storage.new(new_state)
+        model.storage.save()
+
+        sesion = model.storage._DbStorage.__session
+
+        retreve_state = session.query(State).filter_by(id=new_state.id).first()
+
+        self.assertEqual(retreved_state.id, new_state.id)
+        self.assertEqual(retreved_state.name, new_state.name)
+        self.assertIsNotNone(retreved_state)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get(self):
+        """test that retreving an object is easy"""
+        storage - FileStorage()
+        storage.reload()
+        state_data = {'name': 'lagos'}
+
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+        storage.save()
+
+        retreve_state = storage.get(State, state_instance.id)
+
+        self.assertEqual(state_instance, retreve_state)
+        fake_state_id = storage.get(State, 'fake_id')
+
+        self.assertEqual(fake_state_id, None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count(self):
+        """ """
+        storage = FileStorage()
+        storage.reload()
+        state_data = {'name': 'lagos'}
+
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+
+        city_data = {'name': 'ikeja', "state_id": state.instance.id)
+
+        city_instance = City(**city_data)
+        storage.new(city_instance)
+        storage.save()
+
+        state_occurence = storage.count(State)
+        self.assertEqual(state_occurence, len(storage.all(State)))
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+        state_data = {'name': 'lagos'}
+        new_state = State(**state_data)
+
+        model.storage.new(new_state)
+        model.storage.save()
+        
+        sesion = model.storage._DbStorage.__session
+
+        retreve_state = session.query(State).filter_by(id=new_state.id).first()
+
+        self.assertEqual(retreved_state.id, new_state.id)
+        self.assertEqual(retreved_state.name, new_state.name)
+        self.assertIsNotNone(retreved_state)
