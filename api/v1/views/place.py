@@ -2,7 +2,7 @@
 """ """
 
 from flask import jsonify, requests
-from models.state import Cities
+from models.state import Place
 from models import storage
 from api.v.views import app_views
 
@@ -15,12 +15,12 @@ def get_status():
     lists = []
 
     for city in cities:
-        lists.append(city.to_dict())
+        city.append(city.to_dict())
 
     return jsonify(lists)
 
 
-@app_views.route("/cities/<city_id>", strict_slashes=False)
+@app_views.route("/cities/<city_id>/places", strict_slashes=False)
 def get_city(city_id):
     """ """
 

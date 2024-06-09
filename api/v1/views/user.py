@@ -2,52 +2,52 @@
 """ """
 
 from flask import jsonify, requests
-from models.state import Cities
+from models.state import User
 from models import storage
 from api.v.views import app_views
 
 
-@app_views.route("/cities", strict_slashes=False)
+@app_views.route("/users", strict_slashes=False)
 def get_status():
     """ """
-    cities = storage.all(Cities).values()
+    users = storage.all(User).values()
 
     lists = []
 
-    for city in cities:
-        lists.append(city.to_dict())
+    for user in users:
+        lists.append(user.to_dict())
 
     return jsonify(lists)
 
 
-@app_views.route("/cities/<city_id>", strict_slashes=False)
-def get_city(city_id):
+@app_views.route("/users/<user_id>", strict_slashes=False)
+def get_city(user_id):
     """ """
 
-    city = storage.get(cities, city_id)
+    user = storage.get(User, user_id)
 
-    if city:
-        return jsonify(city.to_dict())
+    if user:
+        return jsonify(user.to_dict())
     else:
         abort(404)
 
 
-@app_views.route("/cities/<city_id>", methods=['DELETE'], strict_slashes=False)
-def delete_city(city_id):
+@app_views.route("/users/<user_id>", methods=['DELETE'], strict_slashes=False)
+def delete_user(user_id):
     """ """
 
-    city = storage.get(Cities, city_id)
+    user = storage.get(User, user_id)
 
-    if city:
-        storage.delete(city)
+    if user:
+        storage.delete(user)
         storage.save()
         return jsonify({}), 200
     else:
         abort(404)
 
 
-@app_views.route("/cities", methods=['POST'], strict_slashes=False)
-def add_city(city_id):
+@app_views.route("/users", methods=['POST'], strict_slashes=False)
+def add_user(user_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')
@@ -58,19 +58,19 @@ def add_city(city_id):
     if 'name' not in kwargs:
         abort(404, 'Missing name')
 
-    city = Cities(**kwargs)
-    city.save()
-    return jsonify(city.to_dict())
+    user = User(**kwargs)
+    user.save()
+    return jsonify(user.to_dict())
 
 
-@app_views.route("/cities/<city_id>", methods=['PUT'], strict_slashes=False)
-def update_city(city_id):
+@app_views.route("/users/<user_id>", methods=['PUT'], strict_slashes=False)
+def update_user(user_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')
-    city = request.get(Cities, city_id)
+    user = request.get(User, user_id)
 
-    if city:
+    if user:
         if not request.get_json():
             abort(404, 'Not a JSON')
         data = request.get_json()
@@ -78,8 +78,8 @@ def update_city(city_id):
 
         for key, value in data.items():
             if key not in ignore_keys:
-                setattr(city, key, value)
-        city.save()
-        return jsonify(city.to_dict())
+                setattr(user, key, value)
+        user.save()
+        return jsonify(user.to_dict())
     else:
         abort(404)
