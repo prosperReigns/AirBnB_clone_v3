@@ -2,7 +2,7 @@
 """ """
 
 from flask import jsonify, requests
-from models.state import User
+from models.user import User
 from models import storage
 from api.v.views import app_views
 
@@ -55,12 +55,14 @@ def add_user(user_id):
         abort(404, 'Not a JSON')
     kwargs = request.get_json()
 
-    if 'name' not in kwargs:
-        abort(404, 'Missing name')
+    if 'email' not in kwargs:
+        abort(404, 'Missing email')
+    if 'password' not in kwargs:
+        abort(404, 'Missing password')
 
     user = User(**kwargs)
     user.save()
-    return jsonify(user.to_dict())
+    return jsonify(user.to_dict()), 201
 
 
 @app_views.route("/users/<user_id>", methods=['PUT'], strict_slashes=False)
@@ -80,6 +82,6 @@ def update_user(user_id):
             if key not in ignore_keys:
                 setattr(user, key, value)
         user.save()
-        return jsonify(user.to_dict())
+        return jsonify(user.to_dict()), 200
     else:
         abort(404)

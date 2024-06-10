@@ -2,19 +2,20 @@
 """ """
 
 from flask import jsonify, requests
-from models.state import Cities
+from models.city import City
+from models.state import State
 from models import storage
 from api.v.views import app_views
 
 
-@app_views.route("/cities", strict_slashes=False)
-def get_status():
+@app_views.route("/state/<state_id>/cities", strict_slashes=False)
+def get_status(state_id):
     """ """
-    cities = storage.all(Cities).values()
+    state = storage.all(State, state_id)
 
     lists = []
 
-    for city in cities:
+    for city in state.cities:
         lists.append(city.to_dict())
 
     return jsonify(lists)
@@ -46,40 +47,47 @@ def delete_city(city_id):
         abort(404)
 
 
-@app_views.route("/cities", methods=['POST'], strict_slashes=False)
-def add_city(city_id):
+@app_views.route("/state/<state_id>/cities", methods=['POST'],
+                                        strict_slashes=False)
+def add_city(state_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')
+
+    state = storage.get(State, state_id)
+    if not state:
+        return abort(404)
     if not request.get_json():
         abort(404, 'Not a JSON')
     kwargs = request.get_json()
 
     if 'name' not in kwargs:
         abort(404, 'Missing name')
+    kwargs['state_id'] = state_id
 
-    city = Cities(**kwargs)
+    city = City(**kwargs)
     city.save()
-    return jsonify(city.to_dict())
+    return jsonify(city.to_dict()), 201
 
 
-@app_views.route("/cities/<city_id>", methods=['PUT'], strict_slashes=False)
+@app_views.route("/cities/<city_id>", methods=['PUT'],
+                                strict_slashes=False)
 def update_city(city_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')
-    city = request.get(Cities, city_id)
+    city = request.get(City, city_id)
 
     if city:
         if not request.get_json():
             abort(404, 'Not a JSON')
         data = request.get_json()
-        ignore_keys = ['id', 'created_at', 'updated_at']
+        ignore_keys = ['id', 'state_id', 'created_at', 'updated_at']
 
         for key, value in data.items():
             if key not in ignore_keys:
                 setattr(city, key, value)
         city.save()
-        return jsonify(city.to_dict())
+        return jsonify(city.to_dict()), 200
     else:
         abort(404)

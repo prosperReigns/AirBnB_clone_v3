@@ -2,7 +2,7 @@
 """ """
 
 from flask import jsonify, requests
-from models.state import Amenities
+from models.amenity import Amenity
 from models import storage
 from api.v.views import app_views
 
@@ -10,12 +10,12 @@ from api.v.views import app_views
 @app_views.route("/amenities", strict_slashes=False)
 def get_status():
     """ """
-    amenities = storage.all(Amenities).values()
+    amenities = storage.all(Ameniy).items()
 
     lists = []
 
-    for amenity in amenities:
-        lists.append(amenity.to_dict())
+    for key, value in amenities:
+        lists.append(value.to_dict())
 
     return jsonify(lists)
 
@@ -24,7 +24,7 @@ def get_status():
 def get_amenity(amenity_id):
     """ """
 
-    amenity = storage.get(Amenities, amenity_id)
+    amenity = storage.get(Amenity, amenity_id)
 
     if amenity:
         return jsonify(amenity.to_dict())
@@ -36,9 +36,9 @@ def get_amenity(amenity_id):
 def delete_amenity(amenity_id):
     """ """
 
-    amenity = storage.get(Amenities, city_id)
+    amenity = storage.get(Amenity, city_id)
 
-    if amenities:
+    if amenity:
         storage.delete(amenity)
         storage.save()
         return jsonify({}), 200
@@ -58,9 +58,9 @@ def add_amenity(amenity_id):
     if 'name' not in kwargs:
         abort(404, 'Missing name')
 
-    amenity = Amenities(**kwargs)
+    amenity = Amenity(**kwargs)
     amenity.save()
-    return jsonify(amenity.to_dict())
+    return jsonify(amenity.to_dict()), 201
 
 
 @app_views.route("/amenities/<amenity_id>", methods=['PUT'], strict_slashes=False)
@@ -68,7 +68,7 @@ def update_amenity(amenity_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')
-    amenity = request.get(Amenities, amenity_id)
+    amenity = request.get(Amenity, amenity_id)
 
     if amenity:
         if not request.get_json():
@@ -80,6 +80,6 @@ def update_amenity(amenity_id):
             if key not in ignore_keys:
                 setattr(amenity, key, value)
         amenity.save()
-        return jsonify(amenity.to_dict())
+        return jsonify(amenity.to_dict()), 200
     else:
         abort(404)
