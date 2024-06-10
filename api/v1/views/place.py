@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.place import Place
-from models.user import user
-from models.city omport Cities
+from models.city import City
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/cities/<city_id>/places", strict_slashes=False)
@@ -67,7 +66,7 @@ def add_place(city_id):
     if 'user_id' not in data:
         abort(404, 'Missing user_id')
     if 'name' not in date:
-        abort(404, Missing name)
+        abort(404, 'Missing name')
 
     user = storage.get(User, data['user_id'])
     if not user:

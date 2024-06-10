@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.state import State
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/states", strict_slashes=False)

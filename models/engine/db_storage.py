@@ -58,10 +58,10 @@ class DBStorage:
     def get(self, cls, id):
         """retreve an object from storage"""
         if cls and id:
-            if cls in classes.value() and isinstance(id, str):
+            if cls in classes.values() and isinstance(id, str):
                 all_objects = self.all(cls)
                 for k, v in all_objects.items():
-                    if key.split('.')[1] == id:
+                    if k.split('.')[1] == id:
                         return v
             else:
                 return None
@@ -72,10 +72,11 @@ class DBStorage:
         if not cls:
             init_of_all_cls = self.all()
             return len(init_of_all_cls)
+
         for clas, value in classes.items():
             if cls == clas or cls == value:
                 all_init_in_prev_cls = self.all(cls)
-            return len(all_init_in_prev_cls)
+                return len(all_init_in_prev_cls)
         if cls not in classes.value():
             return None
 

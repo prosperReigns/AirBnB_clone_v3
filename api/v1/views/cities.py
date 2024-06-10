@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.city import City
 from models.state import State
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/state/<state_id>/cities", strict_slashes=False)
-def get_status(state_id):
+def get_city_status(state_id):
     """ """
     state = storage.all(State, state_id)
 

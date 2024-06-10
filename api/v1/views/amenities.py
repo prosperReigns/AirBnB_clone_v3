@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.amenity import Amenity
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/amenities", strict_slashes=False)
-def get_status():
+def get_amenity_status():
     """ """
     amenities = storage.all(Ameniy).items()
 

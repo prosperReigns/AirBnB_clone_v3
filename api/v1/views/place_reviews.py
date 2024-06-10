@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.city import City
 from models.review import Review
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/cities/<city_id>/reviews", strict_slashes=False)
-def get_status(city_id):
+def get_review_status(city_id):
     """ """
     city = storage.all(City, city_id)
 
@@ -74,7 +74,7 @@ def add_review(place_id):
 
 @app_views.route("/reviews/<review_id>", methods=['PUT'],
                                 strict_slashes=False)
-def update_city(review_id):
+def update_review(review_id):
     """ """
     if request.content_type != 'application/json':
         abort(404, 'Not a JSON')

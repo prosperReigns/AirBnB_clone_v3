@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 """ """
 
-from flask import jsonify, requests
+from flask import jsonify, request
 from models.user import User
 from models import storage
-from api.v.views import app_views
+from api.v1.views import app_views
 
 
 @app_views.route("/users", strict_slashes=False)
-def get_status():
+def get_user_status():
     """ """
     users = storage.all(User).values()
 
@@ -21,7 +21,7 @@ def get_status():
 
 
 @app_views.route("/users/<user_id>", strict_slashes=False)
-def get_city(user_id):
+def get_user(user_id):
     """ """
 
     user = storage.get(User, user_id)
