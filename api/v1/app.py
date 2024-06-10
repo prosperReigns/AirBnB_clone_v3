@@ -1,32 +1,35 @@
 #!/usr/bin/python3
-""" a script to show current api status """
+"""Flask server (variable app)
+"""
+
 
 from flask import Flask, jsonify
-from model.storage import storage
+from models import storage
+from os import getenv
 from api.v1.views import app_views
-from flask.cors import CORS
-
 
 app = Flask(__name__)
-
-CORS(app, resources={r'/api/v1/*': {'origins': 'www.google.com'}})
 app.register_blueprint(app_views)
+app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def close_storage():
-    """close the sstorage if connection is lost
-    """
-     storage.close()
+def downtear(self):
+    '''Status of your API'''
+    storage.close()
+
 
 @app.errorhandler(404)
-def handle_error():
-    """ """
-    return jsonify({'error': 'Not Found'}), 404
+def page_not_found(error):
+    '''return render_template'''
+    return jsonify('error='Not found'), 404
 
 
 if __name__ == "__main__":
-    HOST = getenv('HBNB_API_HOST', '0.0.0.0')
-    PORT = int(getenv('HBNB_API_PORT', 5000))
-    app.run(debug=True, host=HOST, port=PORT, threaded=True)
-
+    host = getenv('HBNB_API_HOST')
+    port = getenv('HBNB_API_PORT')
+    if not host:
+        host = '0.0.0.0'
+    if not port:
+        port = '5000'
+    app.run(host=host, port=port, threaded=True)
